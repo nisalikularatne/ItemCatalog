@@ -12,7 +12,7 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
     cursor.close()
 
 
-#Fake Restaurants
+
 restaurant = {'name':'TheCRUDdyCrab','id': '1'}
 
 restaurants = [{'name':'The CRUDdy Crab','id': '1'}, {'name':'Blue Burgers', 'id':'2'},{'name':'Taco Hut', 'id':'3'}]
