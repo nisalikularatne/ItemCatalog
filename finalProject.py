@@ -114,7 +114,7 @@ def editMenuItem(restaurant_id, menu_id):
         flash('menu item edited')
         return redirect(url_for('showMenu',restaurant_id=restaurant_id))
     else:
-     return render_template('editmenu.html', restaurant_id=restaurant_id, menu_id=menu_id,item=item,restaurant=restaurant)
+     return render_template('editmenu.html', restaurant_id=restaurant_id, menu_id=menu_id,menu_item=menu_item,restaurant=restaurant)
 
 
 @app.route('/restaurants/<int:restaurant_id>/menu/<int:menu_id>/delete',methods=['GET','POST'])

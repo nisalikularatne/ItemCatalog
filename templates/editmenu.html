@@ -4,13 +4,13 @@
 <form action= "{{url_for('editMenuItem',restaurant_id=restaurant_id,menu_id=menu_id)}}" method = 'POST'>
 
 <p>Name:</p>
-<input type = 'text' size='30' name = 'name' placeholder={{item.name}}>
+<input type = 'text' size='30' name = 'name' value='{{menu_item.name}}'>
 <p>Description:</p>
-<input type = 'text' size='30' name = 'description' placeholder={{item.description}}>
+<input type = 'text' size='30' name = 'description' value='{{menu_item.description}}'>
 <p>Price</p>
-<input type = 'text' size='30' name = 'price' placeholder={{item.price}}>
+<input type = 'text' size='30' name = 'price' value='{{menu_item.price}}'>
 <p>Course</p>
-<input type = 'text' size='30' name = 'course' placeholder={{item.course}}>
+<input type = 'text' size='30' name = 'course' value='{{menu_item.course}}'>
 <input type='submit' value='Edit'>
 </form>
 <a href= '/restaurants/{{restaurant.id}}/menu'>Cancel</a>
