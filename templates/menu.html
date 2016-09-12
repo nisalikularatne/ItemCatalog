@@ -1,0 +1,20 @@
+<html>
+<body>
+<h1>Menu</h1>
+<a href= '/restaurants/{{restaurant.id}}/menu/new'>Create new menu item</a>
+{% for item in items %}
+<p>{{item.id}}</p>
+<p>{{item.restaurant_id}}</p>
+ <p>{{item.name}}</p>
+<p>{{item.course}}</p>
+<p>{{item.description}}</p>
+<p>{{item.price}}</p>
+<a href='/restaurants/{{restaurant.id}}/menu/{{item.id}}/edit'>Edit</a>
+ <a href="/restaurants/{{restaurant.id}}/menu/{{item.id}}/delete">Delete</a>
+
+
+{% endfor %}
+<br><br>
+<a href="/restaurants">Cancel</a>
+</body>
+</html>
