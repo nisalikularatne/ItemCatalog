@@ -6,24 +6,56 @@ from sqlalchemy import create_engine
 
 Base=declarative_base()
 
-class Restaurant(Base):
+class User(Base):
+    __tablename__ = 'user'
 
-    __tablename__='restaurant'
+    id = Column(Integer, primary_key=True)
+    name = Column(String(250), nullable=False)
+    email = Column(String(250), nullable=False)
+    picture = Column(String(250))
+    category = RelationshipProperty("Category")
+
+class Category(Base):
+
+    __tablename__='category'
     name = Column(String(80), nullable=False)
     id = Column(Integer, primary_key=True)
-    items=RelationshipProperty("MenuItem")
+    items=RelationshipProperty("CategoryItem")
+    user_id = Column(Integer, ForeignKey('user.id'))
+    user = RelationshipProperty(User)
+
+    @property
+    def serialize(self):
+        """Return object data in easily serializeable format"""
+        return {
+            'name': self.name,
+            'id': self.id,
+        }
 
 
-class MenuItem(Base):
-    __tablename__ = 'menu_item'
+
+class CategoryItem(Base):
+    __tablename__ = 'category_item'
     name = Column(String(80), nullable=False)
     id = Column(Integer, primary_key=True)
-    course=Column(String(250))
     description = Column(String(250))
     price=Column(String(8))
-    restaurant_id = Column(Integer,ForeignKey('restaurant.id'))
-    restaurant=RelationshipProperty(Restaurant)
+    category_id = Column(Integer,ForeignKey('category.id'))
+    category=RelationshipProperty(Category)
+    user_id = Column(Integer, ForeignKey('user.id'))
+    user = RelationshipProperty("User")
 
 
-engine=create_engine('sqlite:///restaurantmenu.db')
+    @property
+    def serialize(self):
+        return {
+            'name': self.name,
+            'description': self.description,
+            'id': self.id,
+            'price': self.price,
+
+        }
+
+
+engine=create_engine('sqlite:///categorywithitems.db')
 Base.metadata.create_all(engine)

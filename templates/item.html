@@ -1,7 +1,7 @@
 <html>
 <body>
-<h1>Menu</h1>
-<a href= '/restaurants/{{restaurant.id}}/menu/new'>Create new menu item</a>
+<h1>Items</h1>
+<a href= '/category/{{category.id}}/item/new'>Create new menu item</a>
 {% with messages = get_flashed_messages() %}
 {% if messages %}
 
@@ -19,12 +19,12 @@
 <p>{{item.course}}</p>
 <p>{{item.description}}</p>
 <p>{{item.price}}</p>
-<a href='/restaurants/{{restaurant.id}}/menu/{{item.id}}/edit'>Edit</a>
- <a href="/restaurants/{{restaurant.id}}/menu/{{item.id}}/delete">Delete</a>
+<a href='/category/{{category.id}}/item/{{item.id}}/edit'>Edit</a>
+ <a href="/category/{{category.id}}/item/{{item.id}}/delete">Delete</a>
 
 
 {% endfor %}
 <br><br>
-<a href="/restaurants">Cancel</a>
+<a href="/category">Cancel</a>
 </body>
 </html>
