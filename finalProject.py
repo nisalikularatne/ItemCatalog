@@ -147,7 +147,9 @@ def gconnect():
 @app.route('/clearSession')
 def clearSession():
     login_session.clear()
-    return "Session cleared"
+    flash("logged out")
+    return redirect('/category')
+
 def createUser(login_session):
     newUser = User(name=login_session['username'], email=login_session[
                    'email'], picture=login_session['picture'])
@@ -270,7 +272,7 @@ def deletecategory(category_id):
     if 'username' not in login_session:
         return redirect('/login')
     if category.user_id != login_session['user_id']:
-        return "<script>function myFunction() {alert('You are not authorized to delete this category. Please create your own category in order to delete.');}</script><body onload='myFunction()''>"
+        return "<script>function myFunction() {alert('You are not authorized to delete this category. Please create your own category in order to delete.');}</script><body onload='myFunction()''> "
     if request.method == 'POST':
       session.delete(category)
       session.commit()

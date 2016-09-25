@@ -1,0 +1,42 @@
+
+{% block content %}
+	<div class="row top-menu">
+		<div class="col-md-10"></div>
+		<div class="col-md-2 text-right">
+			<a href="{{url_for('showLogin')}}">Click Here to Log in </a>
+		</div>
+	</div>
+	<div class="row divider blue">
+		<div class="col-md-12"></div>
+	</div>
+	<div class="row banner main">
+		<div class="col-md-1"></div>
+		<div class="col-md-11 padding-none">
+			<h1>Category</h1>
+		</div>
+	</div>
+
+	<div class = 'flash'>
+		      {% with messages = get_flashed_messages() %}
+      {% if messages %}
+
+        <ul>
+        {% for message in messages %}
+            <li> <strong> {{ message }} </strong> </li>
+        {% endfor %}
+        </ul>
+        {% endif %}
+    {% endwith %}
+
+</div>
+
+
+
+
+{% for category in category_first %}
+	 <p>{{category.name}}</p>
+<a href="/category/{{category.id}}/menu">Show menu</a><br><br>
+ <a href='/category/{{category.id}}/edit'>Edit</a>
+ <a href="/category/{{category.id}}/delete">Delete</a>
+{% endfor %}
+{% endblock %}

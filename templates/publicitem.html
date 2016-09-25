@@ -1,0 +1,27 @@
+<html>
+<body>
+<h1>Menu</h1>
+<a href= '/category/{{category.id}}/item/new'>Create new item</a>
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+
+<ul>
+{% for message in messages %}
+  <li><strong>{{message}}</strong></li>
+  {% endfor %}
+</ul>
+{% endif %}
+{% endwith %}
+{% for item in items %}
+<p>{{item.id}}</p>
+<p>{{item.restaurant_id}}</p>
+ <p>{{item.name}}</p>
+<p>{{item.course}}</p>
+<p>{{item.description}}</p>
+<p>{{item.price}}</p>
+
+{% endfor %}
+<br><br>
+<a href="/restaurants">Cancel</a>
+</body>
+</html>
