@@ -330,7 +330,7 @@ def editCategoryItem(category_id, item_id):
         return render_template('edititem.html', category_id=category_id, item_id=item_id, category_item=category_item, category=category)
 
 
-#function to delete the item in a category
+#function to delete a item in a category
 @app.route('/category/<int:category_id>/item/<int:item_id>/delete', methods=['GET', 'POST'])
 def deleteCategoryItem(category_id, item_id):
     category = session.query(Category).filter(Category.id == category_id).one()
