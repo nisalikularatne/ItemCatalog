@@ -6,6 +6,7 @@ from sqlalchemy import create_engine
 
 Base=declarative_base()
 
+#create User table
 class User(Base):
     __tablename__ = 'user'
 
@@ -15,6 +16,7 @@ class User(Base):
     picture = Column(String(250))
     category = RelationshipProperty("Category")
 
+#create category table
 class Category(Base):
 
     __tablename__='category'
@@ -24,6 +26,7 @@ class Category(Base):
     user_id = Column(Integer, ForeignKey('user.id'))
     user = RelationshipProperty(User)
 
+#JSONIFY
     @property
     def serialize(self):
         """Return object data in easily serializeable format"""
@@ -33,7 +36,7 @@ class Category(Base):
         }
 
 
-
+#create table item for each category
 class CategoryItem(Base):
     __tablename__ = 'category_item'
     name = Column(String(80), nullable=False)
@@ -46,6 +49,7 @@ class CategoryItem(Base):
     user = RelationshipProperty("User")
 
 
+#JSONIFY
     @property
     def serialize(self):
         return {
@@ -57,5 +61,6 @@ class CategoryItem(Base):
         }
 
 
+#engine creation
 engine=create_engine('sqlite:///categorywithitems.db')
 Base.metadata.create_all(engine)

@@ -1,3 +1,4 @@
+#import all the modules for the project
 from flask import Flask, render_template, request, redirect, url_for
 from flask import flash, jsonify
 from flask import session as login_session
@@ -25,6 +26,7 @@ app = Flask(__name__)
 app.secret_key = 'super_secret_key'
 app.debug = True
 
+#client details and connection to the databsee engine
 CLIENT_ID = json.loads(
     open('client_secret.json', 'r').read())['web']['client_id']
 APPLICATION_NAME = "category item app"
@@ -34,14 +36,14 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
-
+#code for displayinn the google sign in button
 @app.route('/login')
 def showLogin():
     state = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(32))
     login_session['state'] = state
     return render_template('login.html', STATE=state)
 
-
+#connecting to the google database
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
     # Validate state token
@@ -162,6 +164,7 @@ def getUserID(email):
         return None
 
 
+#logging out from google account using OAuth
 @app.route('/gdisconnect')
 def gdisconnect():
     credentials = login_session.get('credentials')
@@ -193,7 +196,8 @@ def gdisconnect():
         return response
 
 
-@app.route('/categorys/<int:category_id>/item/JSON')
+#function to display the items in a category
+@app.route('/category/<int:category_id>/item/JSON')
 def categoryItemJSON(category_id):
     category = session.query(Category).filter_by(id=category_id).one()
     items = session.query(CategoryItem).filter_by(
@@ -201,7 +205,8 @@ def categoryItemJSON(category_id):
     return jsonify(CategoryItems=[i.serialize for i in items])
 
 
-@app.route('/categorys/<int:category_id>/item/<int:item_id>/JSON')
+#function to display the information of a particular item under a category
+@app.route('/category/<int:category_id>/item/<int:item_id>/JSON')
 def ItemJSON(category_id, item_id):
     category = session.query(Category).filter_by(id=category_id).one()
     items = session.query(CategoryItem).filter_by(
@@ -209,6 +214,7 @@ def ItemJSON(category_id, item_id):
     return jsonify(CategoryItems=[i.serialize for i in items])
 
 
+#function showing the list of categories available
 @app.route('/category', methods=['GET'])
 @app.route('/')
 def showcategory():
@@ -220,6 +226,7 @@ def showcategory():
         return render_template('category.html', category_first=category_first, user=user)
 
 
+#function to create a new category
 @app.route('/category/new', methods=['GET', 'POST'])
 def newcategory():
     if 'username' not in login_session:
@@ -235,6 +242,7 @@ def newcategory():
         return render_template('newcategory.html')
 
 
+#function to edit the category name
 @app.route('/category/<int:category_id>/edit', methods=['GET', 'POST'])
 def editcategory(category_id):
     category = session.query(Category).filter(Category.id == category_id).one()
@@ -253,6 +261,7 @@ def editcategory(category_id):
         return render_template('editcategory.html', category_id=category_id, category=category)
 
 
+#function to delete a category
 @app.route('/category/<int:category_id>/delete', methods=['GET', 'POST'])
 def deletecategory(category_id):
 
@@ -270,6 +279,7 @@ def deletecategory(category_id):
         return render_template('deletecategory.html', category_id=category_id, category=category)
 
 
+#function to show the items of a category
 @app.route('/category/<int:category_id>')
 @app.route('/category/<int:category_id>/item', methods=['GET', 'POST'])
 def showItem(category_id):
@@ -282,6 +292,7 @@ def showItem(category_id):
         return render_template('item.html', items=items, category=category, creator=creator)
 
 
+#creating a new item for a particular category
 @app.route('/category/<int:category_id>/item/new', methods=['GET', 'POST'])
 def newCategoryItem(category_id):
     category = session.query(Category).filter(Category.id == category_id).one()
@@ -299,6 +310,7 @@ def newCategoryItem(category_id):
         return render_template('newitem.html', category_id=category_id, category=category)
 
 
+#editting an item in a category
 @app.route('/category/<int:category_id>/item/<int:item_id>/edit', methods=['GET', 'POST'])
 def editCategoryItem(category_id, item_id):
     category = session.query(Category).filter(Category.id == category_id).one()
@@ -318,6 +330,7 @@ def editCategoryItem(category_id, item_id):
         return render_template('edititem.html', category_id=category_id, item_id=item_id, category_item=category_item, category=category)
 
 
+#function to delete the item in a category
 @app.route('/category/<int:category_id>/item/<int:item_id>/delete', methods=['GET', 'POST'])
 def deleteCategoryItem(category_id, item_id):
     category = session.query(Category).filter(Category.id == category_id).one()
@@ -333,6 +346,7 @@ def deleteCategoryItem(category_id, item_id):
     return render_template('deleteitem.html', category_id=category_id, item_id=item_id, category_item=category_item, category=category)
 
 
+#main function which runs the program on localhost:5000
 if __name__ == "__main__":
     app.secret_key = 'super_secret_key'
     app.debug = True
