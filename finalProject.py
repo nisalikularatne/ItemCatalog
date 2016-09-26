@@ -1,9 +1,11 @@
-from flask import Flask,render_template,request,redirect,url_for,flash,jsonify
+from flask import Flask, render_template, request, redirect, url_for
+from flask import flash, jsonify
 from flask import session as login_session
-import random,string
+import random
+import string
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from database_setup import Base, Category,CategoryItem,User
+from database_setup import Base, Category, CategoryItem, User
 from sqlalchemy.engine import Engine
 from sqlalchemy import event
 from oauth2client.client import flow_from_clientsecrets
@@ -13,25 +15,12 @@ import json
 from flask import make_response
 import requests
 
+
 @event.listens_for(Engine, "connect")
 def set_sqlite_pragma(dbapi_connection, connection_record):
     cursor = dbapi_connection.cursor()
     cursor.execute("PRAGMA foreign_keys=ON")
     cursor.close()
-
-
-
-category = {'name':'TheCRUDdyCrab','id': '1'}
-
-categorys = [{'name':'The CRUDdy Crab','id': '1'}, {'name':'Blue Burgers', 'id':'2'},{'name':'Taco Hut', 'id':'3'}]
-
-
-
-items = [ {'name':'Cheese Pizza', 'description':'made with fresh cheese', 'price':'$5.99','course' :'Entree', 'id':'1'}, {'name':'Chocolate Cake','description':'made with Dutch Chocolate', 'price':'$3.99', 'course':'Dessert','id':'2'},{'name':'Caesar Salad', 'description':'with fresh organic vegetables','price':'$5.99', 'course':'Entree','id':'3'},{'name':'Iced Tea', 'description':'with lemon','price':'$.99', 'course':'Beverage','id':'4'},{'name':'Spinach Dip', 'description':'creamy dip with fresh spinach','price':'$1.99', 'course':'Appetizer','id':'5'} ]
-item =  {'name':'Cheese Pizza','description':'made with fresh cheese','price':'$5.99','course' :'Entree'}
-
-
-
 app = Flask(__name__)
 app.secret_key = 'super_secret_key'
 app.debug = True
@@ -45,11 +34,13 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
+
 @app.route('/login')
 def showLogin():
     state = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(32))
     login_session['state'] = state
     return render_template('login.html', STATE=state)
+
 
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
@@ -123,14 +114,12 @@ def gconnect():
     login_session['username'] = data['name']
     login_session['picture'] = data['picture']
     login_session['email'] = data['email']
-
-
-    user_id=getUserID(login_session['email'])
+    user_id = getUserID(login_session['email'])
     if not user_id:
-        user_id=createUser(login_session)
-        login_session['user_id']=user_id
+        user_id = createUser(login_session)
+        login_session['user_id'] = user_id
 
-    login_session['user_id']=user_id
+    login_session['user_id'] = user_id
 
     output = ''
     output += '<h1>Welcome, '
@@ -149,6 +138,7 @@ def clearSession():
     login_session.clear()
     flash("logged out")
     return redirect('/category')
+
 
 def createUser(login_session):
     newUser = User(name=login_session['username'], email=login_session[
@@ -170,6 +160,7 @@ def getUserID(email):
         return user.id
     except:
         return None
+
 
 @app.route('/gdisconnect')
 def gdisconnect():
@@ -202,9 +193,6 @@ def gdisconnect():
         return response
 
 
-
-
-
 @app.route('/categorys/<int:category_id>/item/JSON')
 def categoryItemJSON(category_id):
     category = session.query(Category).filter_by(id=category_id).one()
@@ -212,34 +200,33 @@ def categoryItemJSON(category_id):
         category_id=category_id).all()
     return jsonify(CategoryItems=[i.serialize for i in items])
 
+
 @app.route('/categorys/<int:category_id>/item/<int:item_id>/JSON')
-def ItemJSON(category_id,item_id):
+def ItemJSON(category_id, item_id):
     category = session.query(Category).filter_by(id=category_id).one()
     items = session.query(CategoryItem).filter_by(
         id=item_id).all()
     return jsonify(CategoryItems=[i.serialize for i in items])
 
 
-@app.route('/category',methods=['GET'])
+@app.route('/category', methods=['GET'])
 @app.route('/')
 def showcategory():
     category_first = session.query(Category).all()
-
-
     if 'username' not in login_session:
         return render_template('publiccategory.html', category_first=category_first)
     else:
         user = session.query(User).filter_by(name=login_session['username']).one()
-        return render_template('category.html',category_first=category_first,user=user)
+        return render_template('category.html', category_first=category_first, user=user)
 
 
-@app.route('/category/new',methods=['GET','POST'])
+@app.route('/category/new', methods=['GET', 'POST'])
 def newcategory():
     if 'username' not in login_session:
         return redirect('/login')
 
-    if request.method=='POST':
-        newcategory=Category(name=request.form['name'],user_id=login_session['user_id'])
+    if request.method == 'POST':
+        newcategory = Category(name=request.form['name'], user_id=login_session['user_id'])
         session.add(newcategory)
         session.commit()
         flash('new category created')
@@ -248,24 +235,25 @@ def newcategory():
         return render_template('newcategory.html')
 
 
-@app.route('/category/<int:category_id>/edit',methods=['GET','POST'])
+@app.route('/category/<int:category_id>/edit', methods=['GET', 'POST'])
 def editcategory(category_id):
-    category = session.query(Category).filter(Category.id==category_id).one()
+    category = session.query(Category).filter(Category.id == category_id).one()
     if 'username' not in login_session:
         return redirect('/login')
     if category.user_id != login_session['user_id']:
         return "<script>function myFunction() {alert('You are not authorized to edit this category. Please create your own category in order to edit.');}</script><body onload='myFunction()''>"
-    if request.method=='POST':
+    if request.method == 'POST':
         if request.form['name']:
-            category.name=request.form['name']
+            category.name = request.form['name']
         session.add(category)
         session.commit()
         flash('category edited')
         return redirect(url_for('showcategory'))
     else:
-     return render_template('editcategory.html',category_id=category_id,category=category)
+        return render_template('editcategory.html', category_id=category_id, category=category)
 
-@app.route('/category/<int:category_id>/delete',methods=['GET','POST'])
+
+@app.route('/category/<int:category_id>/delete', methods=['GET', 'POST'])
 def deletecategory(category_id):
 
     category = session.query(Category).filter(Category.id == category_id).one()
@@ -274,18 +262,18 @@ def deletecategory(category_id):
     if category.user_id != login_session['user_id']:
         return "<script>function myFunction() {alert('You are not authorized to delete this category. Please create your own category in order to delete.');}</script><body onload='myFunction()''> "
     if request.method == 'POST':
-      session.delete(category)
-      session.commit()
-      flash('category deleted')
-      return redirect(url_for('showcategory'))
+        session.delete(category)
+        session.commit()
+        flash('category deleted')
+        return redirect(url_for('showcategory'))
     else:
-      return render_template('deletecategory.html', category_id=category_id,category=category)
+        return render_template('deletecategory.html', category_id=category_id, category=category)
 
 
 @app.route('/category/<int:category_id>')
-@app.route('/category/<int:category_id>/item',methods=['GET','POST'])
+@app.route('/category/<int:category_id>/item', methods=['GET', 'POST'])
 def showItem(category_id):
-    category = session.query(Category).filter(Category.id==category_id).one()
+    category = session.query(Category).filter(Category.id == category_id).one()
     creator = getUserInfo(category.user_id)
     items = session.query(CategoryItem).filter(category_id == CategoryItem.category_id).all()
     if 'username' not in login_session or creator.id != login_session['user_id']:
@@ -294,8 +282,7 @@ def showItem(category_id):
         return render_template('item.html', items=items, category=category, creator=creator)
 
 
-
-@app.route('/category/<int:category_id>/item/new',methods=['GET','POST'])
+@app.route('/category/<int:category_id>/item/new', methods=['GET', 'POST'])
 def newCategoryItem(category_id):
     category = session.query(Category).filter(Category.id == category_id).one()
     if 'username' not in login_session:
@@ -303,16 +290,16 @@ def newCategoryItem(category_id):
     if login_session['user_id'] != category.user_id:
         return "<script>function myFunction() {alert('You are not authorized to add items to this category. Please create your own category in order to add items.');}</script><body onload='myFunction()''>"
     if request.method == 'POST':
-        newCategoryItem = CategoryItem(name=request.form['name'],description=request.form['description'],price=request.form['price'],category_id=category_id, user_id=category.user_id)
+        newCategoryItem = CategoryItem(name=request.form['name'], description=request.form['description'], price=request.form['price'], category_id=category_id, user_id=category.user_id)
         session.add(newCategoryItem)
         session.commit()
         flash('new item created')
-        return redirect(url_for('showItem',category_id=category_id))
+        return redirect(url_for('showItem', category_id=category_id))
     else:
-        return render_template('newitem.html', category_id=category_id,category=category)
+        return render_template('newitem.html', category_id=category_id, category=category)
 
 
-@app.route('/category/<int:category_id>/item/<int:item_id>/edit',methods=['GET','POST'])
+@app.route('/category/<int:category_id>/item/<int:item_id>/edit', methods=['GET', 'POST'])
 def editCategoryItem(category_id, item_id):
     category = session.query(Category).filter(Category.id == category_id).one()
     category_item = session.query(CategoryItem).filter(CategoryItem.id == item_id).one()
@@ -321,17 +308,17 @@ def editCategoryItem(category_id, item_id):
     if request.method == 'POST':
         if request.form['name']:
             category_item.name = request.form['name']
-            category_item.description=request.form['description']
-            category_item.price=request.form['price']
+            category_item.description = request.form['description']
+            category_item.price = request.form['price']
         session.add(category_item)
         session.commit()
         flash('category item edited')
-        return redirect(url_for('showItem',category_id=category_id))
+        return redirect(url_for('showItem', category_id=category_id))
     else:
-     return render_template('edititem.html', category_id=category_id, item_id=item_id,category_item=category_item,category=category)
+        return render_template('edititem.html', category_id=category_id, item_id=item_id, category_item=category_item, category=category)
 
 
-@app.route('/category/<int:category_id>/item/<int:item_id>/delete',methods=['GET','POST'])
+@app.route('/category/<int:category_id>/item/<int:item_id>/delete', methods=['GET', 'POST'])
 def deleteCategoryItem(category_id, item_id):
     category = session.query(Category).filter(Category.id == category_id).one()
     category_item = session.query(CategoryItem).filter(CategoryItem.id == item_id).one()
@@ -342,11 +329,11 @@ def deleteCategoryItem(category_id, item_id):
         session.delete(category_item)
         session.commit()
         flash('category item deleted')
-        return redirect(url_for('showItem',category_id=category_id))
-    return render_template('deleteitem.html', category_id=category_id, item_id=item_id,category_item=category_item,category=category)
+        return redirect(url_for('showItem', category_id=category_id))
+    return render_template('deleteitem.html', category_id=category_id, item_id=item_id, category_item=category_item, category=category)
 
 
-if __name__=="__main__":
-    app.secret_key='super_secret_key'
-    app.debug=True
-    app.run(host='0.0.0.0',port=5000)
+if __name__ == "__main__":
+    app.secret_key = 'super_secret_key'
+    app.debug = True
+    app.run(host='0.0.0.0', port=5000)
