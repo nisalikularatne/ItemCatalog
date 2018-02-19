@@ -1,15 +1,40 @@
-#Item Catalog
+# Item Catalog
 
-    The following project contains the following important files -
-    ---------------------------------------------------------------
-    1) finalProject.py
-    2)templates folder which comprises of all the templates used for this project.
-    3)categorywithitems.db database file conprising the relationship between the tables used in the project
-    4)database_setup.py which defines the tables and relationship between them
 
-    How to run the project
-    -----------------------------------------
-    1) Install vagrant on your machine along with virtualBox
-    2)Start Vagrant SSH
-    3)Check the folder which shares your project folder. Usually it is /vagrant
-    4)Run the finalProject.py file from the Vagrant console.
+### Project Overview
+> To Develop an application that provides a list of items within a variety of categories as well as provide a user registration and authentication system. Registered users will have the ability to post, edit and delete their own items.
+
+### Why This Project?
+> Modern web applications perform a variety of functions and provide amazing features and utilities to their users; but deep down, it’s really all just creating, reading, updating and deleting data. In this project, you’ll combine your knowledge of building dynamic websites with persistent data storage to create a web application that provides a compelling service to your users.
+
+### What Will I Learn?
+  * Implementing CRUD (create, read, update and delete) operations.
+  * Develop a RESTful web application using the Python framework Flask
+  * Implementing third-party OAuth authentication.
+ 
+  
+### How to Run?
+
+#### PreRequisites
+  * [Python ~2.7](https://www.python.org/)
+  * [Vagrant](https://www.vagrantup.com/)
+  * [VirtualBox](https://www.virtualbox.org/)
+  
+#### Setup Project:
+  1. Install Vagrant and VirtualBox
+  2. Download or Clone [fullstack-nanodegree-vm](https://github.com/udacity/fullstack-nanodegree-vm) repository.
+  3. Find the catalog folder and replace it with the content of this current repository, by either downloading or cloning it from
+  [Here](https://github.com/sagarchoudhary96/P5-Item-Catalog).
+
+#### Launch Project
+  1. Launch the Vagrant VM using command:
+  
+  ```
+    $ vagrant up
+  ```
+  2. Run your application within the VM
+  
+  ```
+    $ python /vagrant/catalog/finalProject.py
+  ```
+  3. Access and test your application by visiting [http://localhost:8000](http://localhost:8000).
